@@ -1,0 +1,36 @@
+services:
+  # ── FastAPI Backend ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      CORS_ORIGINS: http://localhost:8501,http://frontend:8501
+    ports:
+      - "${BACKEND_HOST_PORT:-8001}:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ── Streamlit Frontend ───────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    # Do not set `container_name` here either
+    restart: unless-stopped
+    environment:
+      API_URL: http://backend:8000
+    ports:
+      - "${FRONTEND_HOST_PORT:-8502}:8501"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+# No local Postgres service: using NeonDB for production/development as configured in `backend/.env`.
