@@ -13,7 +13,7 @@ A full-stack financial application that recommends investment portfolios based o
 | Backend  | FastAPI · Python 3.11 · SQLAlchemy    |
 | Database | PostgreSQL 16                         |
 | Auth     | JWT (access token) + HttpOnly cookies |
-| Deploy   | Docker Compose (3 services)           |
+| Deploy   | Docker Compose (2 services)           |
 
 > Redis has been intentionally excluded. Rate limiting uses `slowapi` with an in-process memory backend.
 
