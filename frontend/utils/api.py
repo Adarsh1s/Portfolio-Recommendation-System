@@ -27,9 +27,11 @@ def _handle(response: requests.Response) -> dict | list:
         data = {"detail": response.text}
 
     if response.status_code == 401:
-        st.session_state.clear()
-        st.error("Session expired. Please log in again.")
-        st.stop()
+        # Don't trigger session expiry logic if the user is merely typing a wrong password during login
+        if "login" not in response.url:
+            st.session_state.clear()
+            st.error("Session expired. Please log in again.")
+            st.stop()
 
     if not response.ok:
         detail = data.get("detail", "Unknown error") if isinstance(data, dict) else str(data)
