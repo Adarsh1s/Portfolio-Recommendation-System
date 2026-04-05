@@ -325,5 +325,177 @@ SELECT COUNT(*) FROM instrument_allocations; -- ~60
 ```
 
 ---
+# 🚀 Deploy & Run Portfolio Recommendation System on OCI VM (Dockerized)
 
+---
+
+## 🧩 1. Connect to VM (from local machine)
+```bash
+cd ~/Downloads
+ssh -i oci-key.key ubuntu@<your-public-ip>
+```
+
+---
+
+## ⚙️ 2. Update System
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+> 👉 If prompted with **"Which services should be restarted?"**, type:
+>
+> ```bash
+> 13
+> ```
+
+---
+
+## 📦 3. Install Required Tools
+```bash
+sudo apt install git nano docker.io docker-compose -y
+```
+
+---
+
+## 🐳 4. Start Docker
+```bash
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+---
+
+## 👤 5. Add User to Docker Group (Optional but Recommended)
+```bash
+sudo usermod -aG docker $USER
+exit
+```
+
+Reconnect:
+```bash
+ssh -i oci-key.key ubuntu@<your-public-ip>
+```
+
+---
+
+## 📥 6. Clone Project from GitHub
+```bash
+git clone https://github.com/<your-username>/portfolio-recommendation-system.git
+cd portfolio-recommendation-system
+```
+
+---
+
+## 🔐 7. Setup Environment Variables
+```bash
+cd backend
+nano .env
+```
+
+Example `.env`:
+```env
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+Save with:
+```
+Ctrl + X → Y → Enter
+```
+
+Verify:
+```bash
+ls -a
+```
+
+---
+
+## 🔙 8. Go Back to Root Directory
+```bash
+cd ..
+```
+
+---
+
+## 🚀 9. Build & Run Containers
+```bash
+docker-compose up --build
+```
+
+> 👉 Run in background:
+>
+> ```bash
+> docker-compose up -d --build
+> ```
+
+---
+
+## 📊 10. Check Running Containers
+```bash
+docker ps
+```
+
+---
+
+## 📜 11. View Logs (if needed)
+```bash
+docker-compose logs -f
+```
+
+---
+
+## 🛑 12. Stop Application
+```bash
+docker-compose down
+```
+
+---
+
+## 🌐 13. Access Application
+
+| Service  | URL                              |
+|----------|----------------------------------|
+| Frontend | `http://<your-public-ip>:8501`   |
+| Backend  | `http://<your-public-ip>:8000`   |
+
+---
+
+## 🔥 14. OCI Network Configuration (IMPORTANT)
+
+In Oracle Cloud, allow the following ports in your **Security List / Ingress Rules**:
+
+| Port  | Purpose  |
+|-------|----------|
+| 22    | SSH      |
+| 8000  | Backend  |
+| 8501  | Frontend |
+
+---
+
+## ⚡ Common Fixes
+
+### ❌ Permission error (Docker)
+```bash
+sudo usermod -aG docker $USER
+```
+
+### ❌ Port not accessible
+
+→ Check OCI Security List Ingress Rules
+
+### ❌ Backend crash
+
+→ Verify your `.env` file is correctly configured
+
+---
+
+## 🚀 Next Steps (Production)
+
+- [ ] Setup **Nginx** reverse proxy
+- [ ] Add **domain + HTTPS** (SSL via Certbot)
+- [ ] Setup **CI/CD pipeline** (GitHub Actions)
+- [ ] Use **Docker volumes** for persistent DB storage
+      
 *All instrument data is illustrative. Not financial advice.*
